@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre con Carta y Gatito</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #161515;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        .sobre {
+            position: relative;
+            width: 600px; /* Tamaño aumentado */
+            height: 400px;
+            background-color: #ffcc80;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .tapa {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #ffb74d;
+            top: 0;
+            left: 0;
+            clip-path: polygon(0 0, 100% 0, 50% 50%);
+            transition: transform 0.5s;
+            z-index: 3;
+        }
+
+        .hoja {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background-color: white;
+            top: 100%;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease-in-out;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .sobre:hover .tapa,
+        .sobre.active .tapa {
+            transform: translateY(-50%);
+        }
+
+        .sobre:hover .hoja,
+        .sobre.active .hoja {
+            transform: translateY(-120%);
+        }
+
+        .sobre:hover::after {
+            content: "💌";
+            font-size: 2rem;
+            position: absolute;
+            top: -40px;
+            animation: bounce 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .hoja p {
+            font-size: 18px;
+            margin: 10px;
+            color: black;
+            font-weight: bold;
+        }
+
+        .hoja img {
+            width: 120px; /* Imagen más grande */
+            height: 120px;
+            margin-top: 10px;
+        }
+
+        .contenido {
+            position: absolute;
+            bottom: 10px;
+            z-index: 1;
+        }
+
+        .contenido img {
+            width: 150px; /* Imagen más grande */
+            height: 150px;
+            transition: transform 0.5s;
+        }
+
+        .sobre:hover .contenido img,
+        .sobre.active .contenido img {
+            transform: translateY(-40px);
+        }
+
+        /* Botón para iniciar música */
+        #musicButton {
+            background-color: #ff4da6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px #ff69b4;
+            transition: transform 0.3s ease;
+        }
+
+        #musicButton:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <button id="musicButton" onclick="playMusic()">🎵 Da clic aquí para escuchar</button>
+
+    <div class="sobre" id="sobre">
+        <div class="tapa"></div>
+        <div class="hoja">
+            <p>Holaaaaa!!! Felices 20 años futuro ingeniero, te adoro mucho mucho.</p>
+            <p>¿Cómo te verás cuando cumplas 60? JAJAJA De seguro mamado JSJS (risa de pena).</p>
+            <p>Estoy muy orgullosa de ti, admiro mucho tu inteligencia para hacer las cosas rápidito. ¡Continúa así! ❤️</p>
+            <p>TE QUIERO MUCHOOO....</p>
+            <p><b>Atte: La casi futura ingeniera (si me lo permite el doctor JAJA)</b></p>
+            <img src="BONITO.jpeg" alt="Corazón animado">
+        </div>
+        <div class="contenido">
+            <img src="https://i.pinimg.com/originals/8b/a6/17/8ba6179997f5606a356ca07681367b6d.gif" alt="Cute Capoo GIF">
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="audio.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        const audio = document.getElementById('bgMusic');
+        const musicButton = document.getElementById('musicButton');
+        const sobre = document.getElementById('sobre');
+        let isMusicPlaying = false;
+        let isOpen = false;
+
+        function playMusic() {
+            audio.play().then(() => {
+                isMusicPlaying = true;
+                musicButton.style.display = 'none'; // Ocultar el botón después de iniciar la música
+            }).catch(error => {
+                console.log("Error al reproducir el audio:", error);
+            });
+        }
+
+        // Funcionalidad para deslizar con el dedo
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        sobre.addEventListener("touchstart", (event) => {
+            touchStartY = event.touches[0].clientY;
+        });
+
+        sobre.addEventListener("touchmove", (event) => {
+            touchEndY = event.touches[0].clientY;
+        });
+
+        sobre.addEventListener("touchend", () => {
+            if (touchStartY - touchEndY > 50) {
+                abrirCarta();
+            } else if (touchEndY - touchStartY > 50) {
+                cerrarCarta();
+            }
+        });
+
+        // Funcionalidad para scroll del mouse
+        sobre.addEventListener("wheel", (event) => {
+            if (event.deltaY < 0) {
+                abrirCarta();
+            } else {
+                cerrarCarta();
+            }
+        });
+
+        // Funcionalidad con teclas de flecha
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp") {
+                abrirCarta();
+            } else if (event.key === "ArrowDown") {
+                cerrarCarta();
+            }
+        });
+
+        function abrirCarta() {
+            if (!isOpen) {
+                sobre.classList.add("active");
+                isOpen = true;
+            }
+        }
+
+        function cerrarCarta() {
+            if (isOpen) {
+                sobre.classList.remove("active");
+                isOpen = false;
+            }
+        }
+    </script>
+</body>
+</html>
